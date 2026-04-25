@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel de Novios — Acceso</title>
+  <link rel="stylesheet" href="https://unpkg.com/primeflex@3.3.1/primeflex.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --plum: #4A2060; --violet: #7B3FA0; --lavender: #C3A8D8;
+      --mist: #EDE6F4; --gold: #C9A96E;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif; font-weight: 300;
+      min-height: 100vh;
+      background: linear-gradient(145deg, var(--plum) 0%, var(--violet) 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .login-card {
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(74,32,96,.4);
+      width: 100%; max-width: 420px; overflow: hidden;
+    }
+    .login-header {
+      background: var(--plum); padding: 2.5rem 2rem 2rem;
+      text-align: center;
+    }
+    .login-header .icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .login-header .icon i { color: var(--lavender); font-size: 1.4rem; }
+    .login-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 300; color: #fff; line-height: 1;
+    }
+    .login-header p {
+      font-size: .72rem; letter-spacing: .35em; text-transform: uppercase;
+      color: var(--lavender); margin-top: .5rem; font-weight: 300;
+    }
+    .login-body { padding: 2rem; }
+    .p-field { margin-bottom: 1.2rem; }
+    .p-field label {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .75rem; font-weight: 400; color: #6B5B7B;
+      letter-spacing: .04em; margin-bottom: .4rem;
+    }
+    .p-field label i { font-size: .75rem; color: var(--violet); }
+    .p-inputtext {
+      width: 100%; padding: .8rem 1rem;
+      border: 1px solid var(--mist); border-radius: 8px;
+      font-size: .9rem; font-family: 'Nunito', sans-serif; font-weight: 300;
+      color: #1C0E2A; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .p-inputtext:focus {
+      border-color: var(--violet);
+      box-shadow: 0 0 0 3px rgba(123,63,160,.15);
+    }
+    .p-button {
+      width: 100%; padding: .9rem; border: none; border-radius: 8px;
+      background: var(--plum); color: #fff;
+      font-family: 'Nunito', sans-serif; font-size: .88rem; font-weight: 600;
+      letter-spacing: .06em; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: .5rem;
+      transition: background .2s, box-shadow .2s;
+    }
+    .p-button:hover {
+      background: var(--violet);
+      box-shadow: 0 6px 20px rgba(74,32,96,.35);
+    }
+    .p-message-error {
+      background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
+      border-radius: 8px; padding: .8rem 1rem;
+      display: flex; align-items: center; gap: .6rem;
+      font-size: .82rem; margin-bottom: 1.2rem;
+    }
+    .back-link {
+      display: block; text-align: center; margin-top: 1.2rem;
+      font-size: .75rem; color: #9B8BAB; text-decoration: none;
+      transition: color .2s;
+    }
+    .back-link:hover { color: var(--violet); }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-header">
+      <div class="icon"><i class="pi pi-lock"></i></div>
+      <h1>{{ wedding.bride }} &amp; {{ wedding.groom }}</h1>
+      <p>Panel de novios</p>
+    </div>
+    <div class="login-body">
+      {% if error %}
+      <div class="p-message-error">
+        <i class="pi pi-exclamation-circle"></i>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+      <form method="POST" action="/novios/login">
+        <div class="p-field">
+          <label><i class="pi pi-user"></i> Usuario</label>
+          <input class="p-inputtext" type="text" name="username"
+                 placeholder="novios" autocomplete="username" required/>
+        </div>
+        <div class="p-field">
+          <label><i class="pi pi-key"></i> Contraseña</label>
+          <input class="p-inputtext" type="password" name="password"
+                 placeholder="••••••••" autocomplete="current-password" required/>
+        </div>
+        <button type="submit" class="p-button">
+          <i class="pi pi-sign-in"></i> Ingresar al panel
+        </button>
+      </form>
+      <a href="/" class="back-link">← Volver a la invitación</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel de Novios — Lista de Invitados</title>
+  <link rel="stylesheet" href="https://unpkg.com/primeflex@3.3.1/primeflex.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/primeicons/primeicons.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Nunito:wght@200;300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --plum:    #4A2060;
+      --violet:  #7B3FA0;
+      --lavender:#C3A8D8;
+      --mist:    #EDE6F4;
+      --gold:    #C9A96E;
+      --surface: #F7F3FC;
+      --card:    #FFFFFF;
+      --text:    #1C0E2A;
+      --subtle:  #6B5B7B;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif; font-weight: 300;
+      background: var(--surface); color: var(--text); min-height: 100vh;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: var(--plum);
+      padding: 0 2rem; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(74,32,96,.3);
+    }
+    .topbar-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; font-weight: 300; color: #fff;
+    }
+    .topbar-brand span { color: var(--lavender); font-style: italic; }
+    .topbar-actions { display: flex; align-items: center; gap: .75rem; }
+    .tb-btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .45rem 1rem; border-radius: 6px;
+      font-size: .75rem; font-weight: 600; letter-spacing: .06em;
+      cursor: pointer; transition: all .2s; border: none;
+      font-family: 'Nunito', sans-serif; text-decoration: none;
+    }
+    .tb-btn-outline {
+      background: transparent; color: rgba(255,255,255,.8);
+      border: 1px solid rgba(255,255,255,.25);
+    }
+    .tb-btn-outline:hover { background: rgba(255,255,255,.1); color: #fff; }
+    .tb-btn-gold { background: var(--gold); color: var(--plum); }
+    .tb-btn-gold:hover { background: #b8935a; }
+
+    /* ── Main ── */
+    .main { padding: 2rem; max-width: 1100px; margin: 0 auto; }
+
+    /* ── Stat cards ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--card); border-radius: 12px;
+      padding: 1.5rem; border: 1px solid var(--mist);
+      box-shadow: 0 1px 6px rgba(74,32,96,.07);
+      display: flex; flex-direction: column; gap: .4rem;
+    }
+    .stat-card .stat-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: .3rem;
+    }
+    .stat-card .stat-icon i { font-size: 1.1rem; }
+    .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.6rem; font-weight: 300; color: var(--plum); line-height: 1;
+    }
+    .stat-label {
+      font-size: .68rem; letter-spacing: .35em;
+      text-transform: uppercase; color: var(--subtle); font-weight: 400;
+    }
+
+    /* ── Toolbar ── */
+    .table-toolbar {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1rem; flex-wrap: wrap;
+    }
+    .search-wrap {
+      position: relative; flex: 1; min-width: 200px;
+    }
+    .search-wrap i {
+      position: absolute; left: .9rem; top: 50%;
+      transform: translateY(-50%); color: var(--subtle); font-size: .85rem;
+    }
+    .p-inputtext {
+      width: 100%; padding: .65rem .9rem .65rem 2.4rem;
+      border: 1px solid var(--mist); border-radius: 8px;
+      font-size: .85rem; font-family: 'Nunito', sans-serif; font-weight: 300;
+      color: var(--text); background: var(--card); outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .p-inputtext:focus {
+      border-color: var(--violet); box-shadow: 0 0 0 3px rgba(123,63,160,.12);
+    }
+    .filter-btns { display: flex; gap: .35rem; }
+    .filter-btn {
+      padding: .5rem 1rem; border-radius: 6px; border: 1px solid var(--mist);
+      background: var(--card); color: var(--subtle); font-size: .75rem;
+      font-weight: 400; cursor: pointer; transition: all .2s;
+      font-family: 'Nunito', sans-serif; text-decoration: none;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--plum); color: #fff; border-color: var(--plum);
+    }
+
+    /* ── Data table (p-datatable style) ── */
+    .p-datatable {
+      background: var(--card); border-radius: 12px;
+      border: 1px solid var(--mist);
+      box-shadow: 0 1px 6px rgba(74,32,96,.07);
+      overflow: hidden;
+    }
+    .p-datatable-header {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--mist);
+      font-size: .72rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--subtle);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: var(--mist); padding: .8rem 1.2rem;
+      font-size: .68rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--violet);
+      text-align: left;
+    }
+    thead th:first-child { border-radius: 0; }
+    tbody tr {
+      border-bottom: 1px solid var(--mist);
+      transition: background .15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #FAF7FD; }
+    tbody td { padding: 1rem 1.2rem; font-size: .85rem; color: var(--text); vertical-align: middle; }
+
+    .p-tag {
+      display: inline-flex; align-items: center; gap: .3rem;
+      border-radius: 20px; padding: .3rem .75rem;
+      font-size: .68rem; font-weight: 600; letter-spacing: .05em;
+    }
+    .p-tag-success { background: #dcfce7; color: #166534; }
+    .p-tag-danger  { background: #fee2e2; color: #991b1b; }
+
+    .guest-name {
+      font-weight: 600; color: var(--plum); font-size: .9rem;
+    }
+    .guest-email { font-size: .78rem; color: var(--subtle); margin-top: .15rem; }
+    .guest-msg   { font-size: .78rem; color: var(--subtle); font-style: italic;
+                   max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .delete-btn {
+      background: none; border: none; cursor: pointer;
+      width: 32px; height: 32px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      color: #ccc; transition: background .2s, color .2s;
+    }
+    .delete-btn:hover { background: #fee2e2; color: #dc2626; }
+
+    /* empty state */
+    .empty-state {
+      padding: 4rem 2rem; text-align: center; color: var(--subtle);
+    }
+    .empty-state i { font-size: 2.5rem; opacity: .3; margin-bottom: 1rem; display: block; }
+    .empty-state p { font-size: .88rem; }
+
+    /* ── Confirm modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(74,32,96,.5); backdrop-filter: blur(4px);
+      z-index: 200; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 14px; padding: 2rem;
+      max-width: 380px; width: 90%; text-align: center;
+      box-shadow: 0 20px 60px rgba(74,32,96,.4);
+      animation: popIn .2s ease;
+    }
+    @keyframes popIn {
+      from { opacity:0; transform: scale(.93); }
+      to   { opacity:1; transform: scale(1); }
+    }
+    .modal i { font-size: 2.5rem; color: #dc2626; margin-bottom: 1rem; display: block; }
+    .modal h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; font-weight: 300; color: var(--plum); margin-bottom: .5rem;
+    }
+    .modal p { font-size: .85rem; color: var(--subtle); margin-bottom: 1.5rem; }
+    .modal-actions { display: flex; gap: .75rem; justify-content: center; }
+    .btn-cancel {
+      padding: .6rem 1.4rem; border-radius: 8px;
+      border: 1px solid var(--mist); background: #fff;
+      color: var(--subtle); font-size: .82rem; cursor: pointer;
+      font-family: 'Nunito', sans-serif; transition: all .2s;
+    }
+    .btn-cancel:hover { background: var(--mist); }
+    .btn-danger {
+      padding: .6rem 1.4rem; border-radius: 8px;
+      border: none; background: #dc2626; color: #fff;
+      font-size: .82rem; font-weight: 600; cursor: pointer;
+      font-family: 'Nunito', sans-serif; transition: background .2s;
+    }
+    .btn-danger:hover { background: #b91c1c; }
+
+    @media(max-width:640px){
+      .topbar { padding: 0 1rem; }
+      .main { padding: 1rem; }
+      .hide-mobile { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<header class="topbar">
+  <div class="topbar-brand">
+    {{ wedding.bride }} <span>&amp; {{ wedding.groom }}</span>
+    <span style="font-size:.7rem;letter-spacing:.3em;color:rgba(255,255,255,.4);
+                 text-transform:uppercase;margin-left:.8rem;font-family:'Nunito',sans-serif;">
+      Panel de novios
+    </span>
+  </div>
+  <div class="topbar-actions">
+    <a href="/novios/export" class="tb-btn tb-btn-gold">
+      <i class="pi pi-file-pdf"></i>
+      <span class="hide-mobile">Exportar PDF</span>
+    </a>
+    <a href="/" class="tb-btn tb-btn-outline" target="_blank">
+      <i class="pi pi-external-link"></i>
+      <span class="hide-mobile">Ver invitación</span>
+    </a>
+    <a href="/novios/logout" class="tb-btn tb-btn-outline">
+      <i class="pi pi-sign-out"></i>
+    </a>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#EDE6F4;">
+        <i class="pi pi-users" style="color:#7B3FA0;"></i>
+      </div>
+      <div class="stat-value">{{ stats.total }}</div>
+      <div class="stat-label">Respuestas totales</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#dcfce7;">
+        <i class="pi pi-check-circle" style="color:#16a34a;"></i>
+      </div>
+      <div class="stat-value">{{ stats.attending }}</div>
+      <div class="stat-label">Confirmaron asistencia</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fee2e2;">
+        <i class="pi pi-times-circle" style="color:#dc2626;"></i>
+      </div>
+      <div class="stat-value">{{ stats.not_attending }}</div>
+      <div class="stat-label">No podrán asistir</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fef9ee;">
+        <i class="pi pi-star-fill" style="color:#C9A96E;"></i>
+      </div>
+      <div class="stat-value">{{ stats.total_guests }}</div>
+      <div class="stat-label">Total de personas</div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <form method="GET" action="/novios" id="filter-form">
+    <div class="table-toolbar">
+      <div class="search-wrap">
+        <i class="pi pi-search"></i>
+        <input class="p-inputtext" type="text" name="q"
+               value="{{ q }}" placeholder="Buscar por nombre o correo…"
+               oninput="document.getElementById('filter-form').submit()"/>
+      </div>
+      <div class="filter-btns">
+        <a href="/novios?filter=all{% if q %}&q={{ q }}{% endif %}"
+           class="filter-btn {% if filter == 'all' %}active{% endif %}">
+          Todos
+        </a>
+        <a href="/novios?filter=attending{% if q %}&q={{ q }}{% endif %}"
+           class="filter-btn {% if filter == 'attending' %}active{% endif %}">
+          <i class="pi pi-check" style="font-size:.65rem;"></i> Asisten
+        </a>
+        <a href="/novios?filter=not_attending{% if q %}&q={{ q }}{% endif %}"
+           class="filter-btn {% if filter == 'not_attending' %}active{% endif %}">
+          <i class="pi pi-times" style="font-size:.65rem;"></i> No asisten
+        </a>
+      </div>
+    </div>
+  </form>
+
+  <!-- Table -->
+  <div class="p-datatable">
+    <div class="p-datatable-header">
+      Lista de invitados &nbsp;·&nbsp;
+      <span style="color:var(--plum); font-weight:700;">{{ guests|length }}</span>
+      resultado{{ 's' if guests|length != 1 else '' }}
+    </div>
+
+    {% if guests %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Invitado</th>
+          <th>Estado</th>
+          <th>Personas</th>
+          <th class="hide-mobile">Mensaje</th>
+          <th class="hide-mobile">Fecha</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for g in guests %}
+        <tr id="row-{{ g.id }}">
+          <td style="color:var(--subtle); font-size:.75rem;">{{ g.id }}</td>
+          <td>
+            <div class="guest-name">{{ g.name }}</div>
+            <div class="guest-email">{{ g.email }}</div>
+          </td>
+          <td>
+            {% if g.attending %}
+            <span class="p-tag p-tag-success">
+              <i class="pi pi-check"></i> Asiste
+            </span>
+            {% else %}
+            <span class="p-tag p-tag-danger">
+              <i class="pi pi-times"></i> No asiste
+            </span>
+            {% endif %}
+          </td>
+          <td>
+            <span style="font-family:'Cormorant Garamond',serif; font-size:1.4rem;
+                         font-weight:300; color:var(--plum);">
+              {{ g.guests if g.attending else '—' }}
+            </span>
+            {% if g.attending %}
+            <span style="font-size:.68rem; color:var(--subtle);">
+              persona{{ 's' if g.guests != 1 else '' }}
+            </span>
+            {% endif %}
+          </td>
+          <td class="hide-mobile">
+            <span class="guest-msg" title="{{ g.message or '' }}">
+              {{ g.message or '—' }}
+            </span>
+          </td>
+          <td class="hide-mobile" style="font-size:.75rem; color:var(--subtle);">
+            {{ g.created_at[:16] if g.created_at else '—' }}
+          </td>
+          <td>
+            <button class="delete-btn"
+                    data-id="{{ g.id }}"
+                    data-name="{{ g.name | e }}"
+                    onclick="confirmDelete(this)"
+                    title="Eliminar">
+              <i class="pi pi-trash"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <i class="pi pi-inbox"></i>
+      <p>No hay invitados que coincidan con tu búsqueda.</p>
+    </div>
+    {% endif %}
+  </div>
+
+</main>
+
+<!-- ── Delete Confirm Modal ── -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <i class="pi pi-trash"></i>
+    <h3>¿Eliminar invitado?</h3>
+    <p id="modal-text">Esta acción no se puede deshacer.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-danger" onclick="doDelete()">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let pendingId = null;
+
+  function confirmDelete(btn) {
+    pendingId = btn.dataset.id;
+    const name = btn.dataset.name;
+    document.getElementById('modal-text').textContent =
+      `¿Seguro que quieres eliminar a "${name}"? Esta acción no se puede deshacer.`;
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    pendingId = null;
+  }
+
+  async function doDelete() {
+    if (!pendingId) return;
+    const res  = await fetch(`/novios/delete/${pendingId}`, { method: 'POST' });
+    const data = await res.json();
+    if (data.success) {
+      const row = document.getElementById(`row-${pendingId}`);
+      row.style.transition = 'opacity .3s';
+      row.style.opacity = '0';
+      setTimeout(() => row.remove(), 300);
+    }
+    closeModal();
+  }
+
+  // Close modal on overlay click
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+</body>
+</html>
