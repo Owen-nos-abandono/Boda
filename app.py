@@ -83,9 +83,20 @@ def init_db():
                     attending   INTEGER NOT NULL DEFAULT 1,
                     guests      INTEGER NOT NULL DEFAULT 1,
                     message     TEXT,
-                    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    created_at  TEXT DEFAULT (to_char(now(), 'YYYY-MM-DD HH24:MI:SS'))
                 )
             """)
+            db.commit()
+            # Migración: si la tabla ya existía con created_at como TIMESTAMP
+            # (de un despliegue anterior), la convertimos a TEXT para que
+            # las plantillas (que hacen slicing de string) sigan funcionando.
+            try:
+                db.execute(
+                    "ALTER TABLE rsvp ALTER COLUMN created_at TYPE TEXT USING created_at::TEXT"
+                )
+                db.commit()
+            except Exception:
+                db.conn.rollback()
         else:
             db.execute("""
                 CREATE TABLE IF NOT EXISTS rsvp (
