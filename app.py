@@ -41,7 +41,7 @@ WEDDING = {
         "address": "Campanitas 3, Rancho San Pedro, 76117 Santiago de Querétaro, Qro.",
         "time": "3:00 PM",
     },
-    "rsvp_deadline": "30 Septiembre, 2025",
+    "rsvp_deadline": "30 Septiembre, 2026",
     "contact_email": "Contacto de la Novia: +52 442 329 6104",
     "story": [
         {"year": "2024", "title": "El primer encuentro",
